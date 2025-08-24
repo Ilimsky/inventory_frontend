@@ -3,7 +3,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' show BarcodeWidget, Barcode;
 
-import '../../models/Sked.dart';
+import '../../../models/Sked.dart';
 
 
 class PdfGenerator {

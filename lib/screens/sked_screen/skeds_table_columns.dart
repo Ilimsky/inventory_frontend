@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../providers/EmployeeProvider.dart';
+import '../../providers/employee_provider.dart';
 
 List<DataColumn> buildTableColumns({
   required BuildContext context,

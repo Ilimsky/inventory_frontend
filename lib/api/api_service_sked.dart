@@ -1,29 +1,17 @@
+// api_service_sked.dart
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
-import '../models/Department.dart';
-import '../models/Employee.dart';
-import '../models/Binding.dart';
 import '../models/Sked.dart';
+import '../models/SkedHistory.dart';
 import '../screens/sked_screen/pagination_response.dart';
 
-class ApiService {
-  // final Dio _dio = Dio(BaseOptions(baseUrl: 'http://localhost:8060/api'));
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'https://inventory-3z06.onrender.com/api'));
+class SkedService {
+  final Dio _dio;
 
-  Future<List<Employee>> fetchEmployees() async {
-    try {
-      final response = await _dio.get('/employees');
-      // debugPrint('Ответ API: ${response.data}');
-      return (response.data as List)
-          .map((json) => Employee.fromJson(json))
-          .toList();
-    } catch (e) {
-      // debugPrint('Ошибка в fetchEmployees: $e');
-      rethrow;
-    }
-  }
+  SkedService(this._dio);
 
   Future<Sked> updateSked(
       int skedId, {
@@ -82,6 +70,7 @@ class ApiService {
     required double price,
     required String place,
     required String comments,
+    bool available = false,
   }) async {
     try {
       final response = await _dio.post(
@@ -98,9 +87,18 @@ class ApiService {
           'price': price,
           'place': place,
           'comments': comments,
+          'available': available,
         },
       );
       return Sked.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> deleteSked(int skedId) async {
+    try {
+      await _dio.delete('/skeds/$skedId');
     } catch (e) {
       rethrow;
     }
@@ -193,37 +191,49 @@ class ApiService {
     }
   }
 
-
-
-  Future<void> deleteSked(int skedId) async {
+  Future<void> releaseSkedNumber(int skedId) async {
     try {
-      await _dio.delete('/skeds/$skedId');
+      await _dio.post('/skeds/$skedId/release-number');
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<List<Binding>> fetchBindings() async {
+  Future<void> writeOffSked(int skedId, String reason) async {
     try {
-      final response = await _dio.get('/employee-departments');
+      await _dio.post(
+        '/skeds/$skedId/write-off',
+        data: {'reason': reason},
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<SkedHistory>> getSkedHistory(int skedId) async {
+    try {
+      final response = await _dio.get('/skeds/$skedId/history');
       return (response.data as List)
-          .map((json) => Binding.fromJson(json))
+          .map((json) => SkedHistory.fromJson(json))
           .toList();
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<List<Department>> fetchDepartments() async {
+  Future<Sked> transferSked(int skedId, int newDepartmentId, String reason) async {
     try {
-      final response = await _dio.get('/departments');
-      return (response.data as List)
-          .map((json) => Department.fromJson(json))
-          .toList();
-    } catch (e) {
+      final response = await _dio.post(
+        '/skeds/$skedId/transfer',
+        data: {
+          'newDepartmentId': newDepartmentId,
+          'reason': reason,
+        },
+      );
+      return Sked.fromJson(response.data);
+    } on DioException catch (e) {
+      print('[ERROR] Dio error: ${e.message}');
       rethrow;
     }
   }
-
-
 }

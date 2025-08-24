@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:inventory_frontend/screens/sked_screen/qr_generator.dart';
+import 'package:inventory_frontend/screens/sked_screen/qr_service/qr_generator.dart';
 import 'package:inventory_frontend/screens/sked_screen/print_service/print_service.dart';
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/DepartmentProvider.dart';
-import '../../providers/EmployeeProvider.dart';
-import '../../providers/SkedProvider.dart';
+import '../../providers/department_provider.dart';
+import '../../providers/employee_provider.dart';
+import '../../providers/sked_provider.dart';
 import '../../models/Sked.dart';
-import '../create_sked_screen.dart';
-import 'skeds_table.dart';
+import '../create_sked_screen/create_sked_screen.dart';
+import '../sked_history_screen.dart';
+import 'skeds_table_heading.dart';
 import 'skeds_search.dart';
 
 class SkedsScreen extends StatefulWidget {
@@ -69,6 +70,16 @@ class _SkedsScreenState extends State<SkedsScreen> {
     } else {
       provider.fetchSkedsByDepartmentPaged(departmentId: departmentId);
     }
+  }
+
+  // ДОБАВЛЕН МЕТОД ДЛЯ ОТКРЫТИЯ ИСТОРИИ
+  void _openHistoryScreen(int skedId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SkedHistoryScreen(skedId: skedId),
+      ),
+    );
   }
 
   @override
@@ -234,6 +245,21 @@ class _SkedsScreenState extends State<SkedsScreen> {
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Ошибка при загрузке данных: $e')),
+                      );
+                    }
+                  },
+                ),
+
+                IconButton(
+                  icon: Icon(Icons.history),
+                  tooltip: 'Тест истории (откроет историю для первого SKED)',
+                  onPressed: () async {
+                    final provider = Provider.of<SkedProvider>(context, listen: false);
+                    if (provider.skeds.isNotEmpty) {
+                      _openHistoryScreen(provider.skeds.first.id);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Нет SKED для просмотра истории')),
                       );
                     }
                   },

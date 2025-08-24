@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_frontend/models/sked.dart';
+import 'package:inventory_frontend/models/Sked.dart';
 
 class SkedDetailScreen extends StatelessWidget {
   final Sked sked;
@@ -20,7 +20,7 @@ class SkedDetailScreen extends StatelessWidget {
             Text('Инвентарный номер: ${sked.skedNumber}'),
             Text('Количество: ${sked.count} ${sked.measure}'),
             Text('Серийный номер: ${sked.serialNumber}'),
-            Text('Цена: ${sked.price} руб.'),
+            Text('Цена: ${sked.price} сом.'),
             if (sked.comments.contains('Перемещено'))
               Text('Статус: Перемещено', style: TextStyle(color: Colors.red)),
             // Добавьте другие поля по необходимости

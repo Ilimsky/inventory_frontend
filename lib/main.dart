@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_frontend/providers/BindingProvider.dart';
-import 'package:inventory_frontend/providers/DepartmentProvider.dart';
-import 'package:inventory_frontend/providers/EmployeeProvider.dart';
-import 'package:inventory_frontend/providers/SkedProvider.dart';
+import 'package:inventory_frontend/providers/binding_provider.dart';
+import 'package:inventory_frontend/providers/department_provider.dart';
+import 'package:inventory_frontend/providers/employee_provider.dart';
+import 'package:inventory_frontend/providers/sked_provider.dart';
 import 'package:inventory_frontend/screens/sked_screen/skeds_screen.dart';
 import 'package:provider/provider.dart';
 

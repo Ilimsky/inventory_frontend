@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../api/ApiService.dart';
+import '../api/api_service.dart';
 import '../models/Binding.dart';
 
 class BindingProvider extends ChangeNotifier {

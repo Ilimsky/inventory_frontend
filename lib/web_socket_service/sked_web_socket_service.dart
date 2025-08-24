@@ -7,8 +7,8 @@ class SkedWebSocketService {
   late final StompClient _client;
   final Map<int, Function(bool)> _availabilityCallbacks = {};
 
-  // SkedWebSocketService({this.url = 'ws://localhost:8060/ws-skeds'}) {
-  SkedWebSocketService({this.url = 'wss://inventory-3z06.onrender.com/ws-skeds'}) {
+  SkedWebSocketService({this.url = 'ws://localhost:8060/ws-skeds'}) {
+  // SkedWebSocketService({this.url = 'wss://inventory-3z06.onrender.com/ws-skeds'}) {
     _client = StompClient(
       config: StompConfig(
         url: url,

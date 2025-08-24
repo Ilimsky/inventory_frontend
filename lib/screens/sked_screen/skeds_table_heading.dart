@@ -4,9 +4,9 @@ import 'package:inventory_frontend/screens/sked_screen/skeds_table_rows.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/Sked.dart';
-import '../../providers/DepartmentProvider.dart';
-import '../../providers/EmployeeProvider.dart';
-import '../../providers/SkedProvider.dart';
+import '../../providers/department_provider.dart';
+import '../../providers/employee_provider.dart';
+import '../../providers/sked_provider.dart';
 
 class SkedsTable extends StatefulWidget {
   final String searchQuery;

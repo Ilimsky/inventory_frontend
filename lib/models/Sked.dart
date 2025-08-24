@@ -17,6 +17,7 @@ class Sked {
   bool isWrittenOff;
 
   bool available;
+  bool numberReleased;
 
   Sked({
     required this.id,
@@ -34,9 +35,10 @@ class Sked {
     required this.comments,
     bool? isWrittenOff,
     required bool available,
-
-  }) : isWrittenOff = isWrittenOff ?? false,
-       available = available ?? false;
+    required bool numberReleased,
+  })  : isWrittenOff = isWrittenOff ?? false,
+        available = available ?? false,
+        numberReleased = numberReleased ?? false;
 
   factory Sked.fromJson(Map<String, dynamic> json) {
     return Sked(
@@ -55,6 +57,7 @@ class Sked {
       comments: json['comments'] as String? ?? '',
       isWrittenOff: json['isWrittenOff'] as bool? ?? false,
       available: json['available'] as bool? ?? false,
+      numberReleased: json['numberReleased'] as bool? ?? false,
     );
   }
 
@@ -64,7 +67,6 @@ class Sked {
       'skedNumber': skedNumber,
       'departmentId': departmentId,
       'employeeId': employeeId,
-
       'assetCategory': assetCategory,
       'dateReceived': DateFormat('yyyy-MM-dd').format(dateReceived),
       'itemName': itemName,
@@ -76,7 +78,7 @@ class Sked {
       'comments': comments,
       'isWrittenOff': isWrittenOff,
       'available': available,
-
+      'numberReleased': numberReleased,
     };
   }
 
@@ -96,6 +98,7 @@ class Sked {
     String? comments,
     bool? isWrittenOff,
     bool? available,
+    bool? numberReleased,
   }) {
     return Sked(
       id: id ?? this.id,
@@ -113,6 +116,7 @@ class Sked {
       comments: comments ?? this.comments,
       isWrittenOff: isWrittenOff ?? this.isWrittenOff,
       available: available ?? this.available,
+      numberReleased: numberReleased ?? this.numberReleased,
     );
   }
 }

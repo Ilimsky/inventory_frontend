@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import '../../models/Sked.dart';
 import '../../models/Department.dart';
 import '../../models/Employee.dart';
-import '../../providers/DepartmentProvider.dart';
-import '../../providers/EmployeeProvider.dart';
+import '../../providers/department_provider.dart';
+import '../../providers/employee_provider.dart';
 
 List<Sked> filterSkeds({
   required BuildContext context,

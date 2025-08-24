@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../models/Employee.dart';
-import '../models/Department.dart';
-import '../providers/DepartmentProvider.dart';
-import '../providers/EmployeeProvider.dart';
-import '../providers/SkedProvider.dart';
+import '../../models/Employee.dart';
+import '../../models/Department.dart';
+import '../../providers/department_provider.dart';
+import '../../providers/employee_provider.dart';
+import '../../providers/sked_provider.dart';
 
 class CreateSkedScreen extends StatefulWidget {
   @override

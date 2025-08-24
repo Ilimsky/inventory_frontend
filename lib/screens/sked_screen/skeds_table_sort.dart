@@ -1,5 +1,5 @@
 import '../../models/Sked.dart';
-import '../../providers/SkedProvider.dart';
+import '../../providers/sked_provider.dart';
 
 void handleSort(
     int columnIndex,
