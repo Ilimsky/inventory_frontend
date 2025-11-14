@@ -6,9 +6,10 @@ class SkedWebSocketService {
   final String url;
   late final StompClient _client;
   final Map<int, Function(bool)> _availabilityCallbacks = {};
+  final List<Function(int, bool)> _broadcastCallbacks = [];
 
-  SkedWebSocketService({this.url = 'ws://localhost:8060/ws-skeds'}) {
-  // SkedWebSocketService({this.url = 'wss://inventory-3z06.onrender.com/ws-skeds'}) {
+  // SkedWebSocketService({this.url = 'ws://localhost:8060/ws-skeds'}) {
+  SkedWebSocketService({this.url = 'wss://inventory-3z06.onrender.com/ws-skeds'}) {
     _client = StompClient(
       config: StompConfig(
         url: url,
@@ -23,8 +24,16 @@ class SkedWebSocketService {
 
   void connect() => _client.activate();
 
+  void listenToAvailability(int skedId, void Function(bool) onUpdate) {
+    if (skedId == -1) {
+      // Исправляем тип для широковещательных callback'ов
+      _broadcastCallbacks.add((int id, bool available) => onUpdate(available));
+    } else {
+      _availabilityCallbacks[skedId] = onUpdate;
+    }
+  }
+
   void _onConnect(StompFrame frame) {
-    print('[WebSocket Connected]');
     _client.subscribe(
       destination: '/topic/sked-updates',
       callback: (frame) {
@@ -34,17 +43,21 @@ class SkedWebSocketService {
           final available = data['available'] as bool;
 
           _availabilityCallbacks[skedId]?.call(available);
+
+          // Широковещательная рассылка
+          for (final callback in _broadcastCallbacks) {
+            callback(skedId, available); // Передаем оба параметра
+          }
         }
       },
     );
   }
 
-  void listenToAvailability(int skedId, void Function(bool) onUpdate) {
-    _availabilityCallbacks[skedId] = onUpdate;
+  void listenToAllUpdates(void Function(int, bool) onUpdate) {
+    _broadcastCallbacks.add(onUpdate);
   }
 
   void pushManualChange(int skedId, bool available) {
-    final message = jsonEncode({'skedId': skedId, 'available': available});
     _client.send(
       destination: '/app/skeds/$skedId/availability',
       body: jsonEncode(available),
@@ -54,5 +67,16 @@ class SkedWebSocketService {
   void dispose() {
     _client.deactivate();
     _availabilityCallbacks.clear();
+    _broadcastCallbacks.clear();
+  }
+
+  // В SkedWebSocketService.dart
+  void pushDateChange(DateTime date) {
+    _client.send(
+      destination: '/app/selected-date',
+      body: jsonEncode({
+        'date': date.toIso8601String(),
+      }),
+    );
   }
 }

@@ -441,4 +441,63 @@ class SkedProvider extends ChangeNotifier {
     _totalElements = 0;
     notifyListeners();
   }
+
+  Future<Sked> updateSkedAvailability(int skedId, bool available) async {
+    try {
+      final sked = _skeds.firstWhere((s) => s.id == skedId);
+      final updatedSked = await apiService.updateSked(
+        sked.id,
+        skedNumber: sked.skedNumber,
+        departmentId: sked.departmentId,
+        employeeId: sked.employeeId,
+        assetCategory: sked.assetCategory,
+        dateReceived: sked.dateReceived,
+        itemName: sked.itemName,
+        serialNumber: sked.serialNumber,
+        count: sked.count,
+        measure: sked.measure,
+        price: sked.price,
+        place: sked.place,
+        comments: sked.comments,
+        available: available, // Только availability меняем
+      );
+
+      // Обновляем локально
+      final index = _skeds.indexWhere((s) => s.id == skedId);
+      if (index != -1) {
+        _skeds[index] = updatedSked;
+      }
+
+      // Отправляем через WebSocket
+      _wsService.pushManualChange(skedId, available);
+
+      notifyListeners();
+      return updatedSked;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Метод для подписки на обновления конкретного SKED
+  void listenToSkedAvailability(int skedId, void Function(bool) onUpdate) {
+    _wsService.listenToAvailability(skedId, onUpdate);
+  }
+
+  // Метод для подписки на все обновления (для веба)
+  void listenToAllAvailabilityUpdates(void Function(int, bool) onUpdate) {
+    // Используем специальный ID -1 для слушания всех обновлений
+    _wsService.listenToAvailability(-1, (bool available) {
+      // В callback передаем skedId и available
+      // Нужно немного модифицировать WebSocket service
+    });
+  }
+
+  // В SkedProvider.dart
+  Future<void> syncSelectedDate(DateTime date) async {
+    _selectedDate = date;
+    notifyListeners();
+
+    // Можно также отправить дату через WebSocket для синхронизации с другими клиентами
+    // _wsService.pushDateChange(date);
+  }
 }

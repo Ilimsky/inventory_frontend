@@ -38,42 +38,48 @@ DataCell _buildDataCell(
   );
 }
 
-DataCell _buildAvailabilityCell(
-    BuildContext context, Sked sked, DateTime? selectedDate) {
+// В buildTableRows, обновляем Checkbox для синхронизации
+DataCell _buildAvailabilityCell(BuildContext context, Sked sked, DateTime? selectedDate) {
   final provider = Provider.of<SkedProvider>(context, listen: false);
 
   return DataCell(
     StatefulBuilder(
       builder: (context, setState) {
+        // Подписываемся на WebSocket обновления для этого SKED
+        provider.listenToSkedAvailability(sked.id, (bool newAvailability) {
+            setState(() {
+              sked.available = newAvailability;
+            });
+        });
+
         return Checkbox(
           value: sked.available,
           onChanged: selectedDate != null
               ? (val) async {
-                  if (val == null) return;
+            if (val == null) return;
 
-                  // Локальное мгновенное обновление
-                  setState(() {
-                    sked.available = val;
-                  });
+            // Локальное мгновенное обновление
+            setState(() {
+              sked.available = val;
+            });
 
-                  try {
-                    // Асинхронное обновление на сервере
-                    await provider.updateSked(sked.copyWith(available: val));
-                  } catch (e) {
-                    // Откат при ошибке
-                    setState(() {
-                      sked.available = !val;
-                    });
-                    debugPrint('Ошибка обновления: $e');
-                  }
-                }
+            try {
+              // Асинхронное обновление на сервере + WebSocket
+              await provider.updateSked(sked.copyWith(available: val));
+            } catch (e) {
+              // Откат при ошибке
+              setState(() {
+                sked.available = !val;
+              });
+              debugPrint('Ошибка обновления: $e');
+            }
+          }
               : null,
         );
       },
     ),
   );
 }
-
 List<DataRow> buildTableRows({
   required BuildContext context,
   required List<Sked> skeds,

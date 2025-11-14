@@ -27,13 +27,35 @@ class _SkedsScreenState extends State<SkedsScreen> {
   DateTime? _selectedDate;
   bool _wasPushedFromCreate = false;
 
+  // В SkedsScreen.dart initState:
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<DepartmentProvider>(context, listen: false).fetchDepartments();
-      Provider.of<SkedProvider>(context, listen: false).initialize();
+      final skedProvider = Provider.of<SkedProvider>(context, listen: false);
+
+      // Подписываемся на все обновления
+      skedProvider.wsService.listenToAvailability(-1, (bool available) {
+        // Принудительно обновляем данные
+        if (skedProvider.currentDepartmentId != null) {
+          skedProvider.fetchSkedsByDepartmentPaged(
+            departmentId: skedProvider.currentDepartmentId!,
+          );
+        } else {
+          skedProvider.fetchAllSkedsPaged();
+        }
+      });
     });
+  }
+
+  void _refreshData(SkedProvider skedProvider) {
+    if (skedProvider.currentDepartmentId != null) {
+      skedProvider.fetchSkedsByDepartmentPaged(
+        departmentId: skedProvider.currentDepartmentId!,
+      );
+    } else {
+      skedProvider.fetchAllSkedsPaged();
+    }
   }
 
   @override
